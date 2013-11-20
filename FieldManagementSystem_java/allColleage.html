@@ -1,0 +1,78 @@
+<!DOCTYPEHTML>
+<html>
+    <head>
+        <meta name="viewport" content="initial-scale=1.0,user-scalable=no">
+            <meta http-equiv="Content-Type"content="text/html;charset=utf-8">
+                <title>Hello,world</title>
+                <style type="text/css">
+                    html { height:100%}
+                    body { height:100%;margin:0px;padding:0px}
+                    #container {height:100%}
+                    body{ margin:0; padding:0;font:12px/16px Verdana,Helvetica,Arial,sans-serif;}
+div.marker{height:40px;width:120px;background:url(http://pages.haozu.ajkcdn.com/20110909/img/map/marker.png) left top no-repeat;white-space:nowrap;}
+div.marker span{ display:inline-block;height:28px;line-height:28px;margin:0 10px;color:#FFF;background:url(http://pages.haozu.ajkcdn.com/20110909/img/map/marker_bg_170x28.gif) right top no-repeat;padding-right:10px;}
+div.change{display:inline-block;background-image:url(http://pages.haozu.ajkcdn.com/20110909/img/map/marker-h.png);}
+div.change span{background-image:url(http://pages.haozu.ajkcdn.com/20110909/img/map/marker-h-l.gif);}
+                    </style>
+                    <script  language="javascript" src ="scripts/jquery.js"></script>
+                    <script type="text/javascript"
+                         src="http://webapi.amap.com/maps?v=1.2&key=1ef044199a48783ba4f77b273dfd8d22" >
+                        </script>
+                        <script type="text/javascript">
+                            var longi;
+                            var lati;
+                            function getLocation()
+                            {
+                            if (navigator.geolocation)
+                            {
+                            navigator.geolocation.getCurrentPosition(initialize);
+                            }
+                            else{alert("Geolocation is not supported by this browser.");}
+                            }
+
+                            function  initialize(position){
+                            	 lati =  position.coords.latitude;
+                              longi =  position.coords.longitude;
+                            var position =   new AMap.LngLat(longi,lati );//创建中心点坐标  
+                            var mapObj = new AMap.Map("container",{center:position});//创建地图实例  
+                          	//var builds = new AMap.Buildings();
+                          	//builds.setMap(mapObj);
+                            $.ajax({
+                            	url:"colleage_checkAllColleagePosition.action",
+                            	dataType:"json",
+                            	method:"GET",
+                            	success:function(data){
+                            		      for(var i = 0; i< data.length; i++)
+                            		    	  {
+                            		    	//自定义覆盖物dom 元素
+                                          	var m = document.createElement("div");
+                                          	m.className = "marker";
+                                          	var n = document.createElement("span");
+                                          	n.innerHTML =data[i].userName;
+                                          	m.appendChild(n);
+                                          	var marker1 = new AMap.Marker({
+                                          	map:mapObj,
+                                          	position:new AMap.LngLat(data[i].checkinLongitude,data[i].checkinLatitude), //基点位置
+                                          //	offset:new AMap.Pixel(0,-40), //相对于基点的偏移位置
+                                          	draggable:false,  //是否可拖动
+                                          	content:m   //自定义覆盖物内容
+                                          	});
+                            		    	  }
+                            		      mapObj.setFitView();
+                            		      
+                            		      
+                            	}
+                            	
+                            });
+                            
+                            
+                            	}
+                            </script>  
+    </head>  
+    
+    <body onload="getLocation()">  
+        <div id="container"></div>  
+            </body>  
+</html>
+
+

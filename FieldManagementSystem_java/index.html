@@ -1,0 +1,96 @@
+<!DOCTYPEHTML>
+<html>
+    <head>
+        <meta name="viewport" content="initial-scale=1.0,user-scalable=no">
+            <meta http-equiv="Content-Type"content="text/html;charset=utf-8">
+                <title>Hello,world</title>
+                <style type="text/css">
+                    html { height:100%}
+                    body { height:100%;margin:0px;padding:0px}
+                    #container {height:100%}
+                    body{ margin:0; padding:0;font:12px/16px Verdana,Helvetica,Arial,sans-serif;}
+div.marker{height:40px;width:120px;background:url(http://pages.haozu.ajkcdn.com/20110909/img/map/marker.png) left top no-repeat;white-space:nowrap;}
+div.marker span{ display:inline-block;height:28px;line-height:28px;margin:0 10px;color:#FFF;background:url(http://pages.haozu.ajkcdn.com/20110909/img/map/marker_bg_170x28.gif) right top no-repeat;padding-right:10px;}
+div.change{display:inline-block;background-image:url(http://pages.haozu.ajkcdn.com/20110909/img/map/marker-h.png);}
+div.change span{background-image:url(http://pages.haozu.ajkcdn.com/20110909/img/map/marker-h-l.gif);}
+                    </style>
+                    <script type="text/javascript"
+                         src="http://webapi.amap.com/maps?v=1.2&key=1ef044199a48783ba4f77b273dfd8d22" >
+                        </script>
+                        <script type="text/javascript">
+                            var longi;
+                            var lati;
+                            function getLocation()
+                            {
+                            if (navigator.geolocation)
+                            {
+                            navigator.geolocation.getCurrentPosition(initialize);
+                            }
+                            else{alert("Geolocation is not supported by this browser.");}
+                            }
+                            var Coords;
+                            function  initialize(position){
+                            	 lati =  position.coords.latitude;
+                              longi =  position.coords.longitude;
+                            var position =   new AMap.LngLat(longi,lati );//创建中心点坐标  
+                            var mapObj = new AMap.Map("container",{center:position,level:17});//创建地图实例 
+                            document.getElementById("Coords").innerHTML = lati+","+longi;
+                          	//var builds = new AMap.Buildings();
+                          	//builds.setMap(mapObj);
+                            //自定义覆盖物dom 元素
+                            	var m = document.createElement("div");
+                            	m.className = "marker";
+                            	var n = document.createElement("span");
+                            	n.innerHTML = "我的位置";
+                            	m.appendChild(n);
+                            	var marker1 = new AMap.Marker({
+                            	map:mapObj,
+                            	position:new AMap.LngLat(longi,lati), //基点位置
+                            	offset:new AMap.Pixel(0,-40), //相对于基点的偏移位置
+                            	draggable:false,  //是否可拖动
+                            	content:m   //自定义覆盖物内容
+                            	});
+                            	var lnglatXY = new AMap.LngLat(longi, 	 lati );
+                            	var GeocoderOption = {
+                            	range: 3000, //范围 
+                            	crossnum: 2, //道路交叉口数 
+                            	roadnum: 3, //路线记录数 
+                            	poinum: 2//POI点数 
+                            	};
+                            	var geo = new AMap.Geocoder(GeocoderOption);
+                            	geo.regeocode(lnglatXY, poiToAddressSearch_CallBack);
+                            	}
+                            
+                            function poiToAddressSearch_CallBack(data) {
+                            	var resultStr = "";
+                            	if (data.status == "E0") {
+                            	var province, city, district, road, address;
+                            	province = data.list[0].province.name;
+                            	if (province == "北京市") {
+                            	city = province;
+                            	}
+                            	else {
+                            	city = data.list[0].city.name;
+                            	}
+                            	district = data.list[0].district.name;
+                            	road = data.list[0].roadlist[0].name;
+                            	address = data.list[0].poilist[0].address;
+                            	resultStr = province + "," + city + "," + district + "," + road + "," + address;
+                            }
+                            else if (data.status == "E1") {
+                            resultStr = "未查找到任何结果!<br />建议：<br />1.请确保所有字词拼写正确。<br />2.尝试不同的关键字。<br />3.尝试更宽泛的关键字。";
+                            }
+                            else {
+                            resultStr = "错误信息：" + data.state + "请对照API Server v2.0.0 简明提示码对照表查找错误类型";
+                            }
+                            document.getElementById("result").innerHTML = resultStr;
+                            }
+                            </script>  
+    </head>  
+    
+    <body onload="getLocation()">  
+        <div id="container"></div>
+        <p id = "Coords"  style="display:none;"></p>  
+        <p id="result" style="display:none;"></p>
+            </body>  
+</html>

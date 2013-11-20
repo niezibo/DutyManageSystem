@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Insert title here</title>
+<script  language="javascript" src ="scripts/jquery.js"></script>
+<script type="text/javascript"
+                         src="http://webapi.amap.com/maps?v=1.2&key=1ef044199a48783ba4f77b273dfd8d22" >
+                        </script>
+                        <script type="text/javascript">
+                    	var lnglatXY = new AMap.LngLat(longi, 	 lati );
+                    	var GeocoderOption = {
+                    	range: 3000, //范围 
+                    	crossnum: 2, //道路交叉口数 
+                    	roadnum: 3, //路线记录数 
+                    	poinum: 2//POI点数 
+                    	};
+                    	var geo = new AMap.Geocoder(GeocoderOption);
+                    	geo.regeocode(lnglatXY, poiToAddressSearch_CallBack);
+                    	}
+                    
+                    function poiToAddressSearch_CallBack(data) {
+                    	var resultStr = "";
+                    	if (data.status == "E0") {
+                    	var province, city, district, road, address;
+                    	province = data.list[0].province.name;
+                    	if (province == "北京市") {
+                    	city = province;
+                    	}
+                    	else {
+                    	city = data.list[0].city.name;
+                    	}
+                    	district = data.list[0].district.name;
+                    	road = data.list[0].roadlist[0].name;
+                    	address = data.list[0].poilist[0].address;
+                    	resultStr = province + "," + city + "," + district + "," + road + "," + address;
+                    }
+                    else if (data.status == "E1") {
+                    resultStr = "未查找到任何结果!<br />建议：<br />1.请确保所有字词拼写正确。<br />2.尝试不同的关键字。<br />3.尝试更宽泛的关键字。";
+                    }
+                    else {
+                    resultStr = "错误信息：" + data.state + "请对照API Server v2.0.0 简明提示码对照表查找错误类型";
+                    }
+                    document.getElementById("result").innerHTML = resultStr;
+                    }
+                        </script>
+</head>
+<body>
+
+</body>
+</html>
